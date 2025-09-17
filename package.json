@@ -1,0 +1,50 @@
+{
+  "name": "suagly",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build --turbopack",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@privy-io/react-auth": "1.88.0",
+    "@privy-io/wagmi": "0.2.12",
+    "@rainbow-me/rainbowkit": "2.2.8",
+    "@types/crypto-js": "^4.2.2",
+    "@types/qrcode": "^1.5.5",
+    "@vercel/kv": "^3.0.0",
+    "@zerodev/ecdsa-validator": "^5.4.9",
+    "@zerodev/sdk": "^5.4.41",
+    "@zerodev/session-key": "^5.5.4",
+    "axios": "1.12.2",
+    "clsx": "^2.1.1",
+    "crypto-js": "^4.2.0",
+    "ethers": "5.7.2",
+    "lucide-react": "^0.445.0",
+    "next": "15.5.3",
+    "passkit-generator": "^3.4.0",
+    "permissionless": "^0.2.57",
+    "qrcode": "^1.5.4",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "viem": "2.37.6",
+    "wagmi": "2.16.9"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.3",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  },
+  "overrides": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  }
+}
