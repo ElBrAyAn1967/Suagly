@@ -1,13 +1,18 @@
 'use client'
 
 import { useState } from 'react'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 
 interface WalletResult {
   success: boolean
   walletAddress: string
   privateKey: string
   balance: string
+  message?: string
+}
+
+interface ErrorResponse {
+  error?: string
   message?: string
 }
 
@@ -36,8 +41,15 @@ export default function NFCScanner() {
       } else {
         setError(response.data.message || 'Failed to create wallet')
       }
-    } catch (error: any) {
-      setError(error.response?.data?.error || 'Network error')
+    } catch (error) {
+      if (error instanceof AxiosError && error.response?.data) {
+        const errorData = error.response.data as ErrorResponse
+        setError(errorData.error || errorData.message || 'Network error')
+      } else if (error instanceof Error) {
+        setError(error.message)
+      } else {
+        setError('An unexpected error occurred')
+      }
       console.error('NFC scan failed:', error)
     } finally {
       setScanning(false)

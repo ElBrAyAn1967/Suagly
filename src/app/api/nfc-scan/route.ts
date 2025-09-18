@@ -14,13 +14,26 @@ const SWAG_TOKEN_ABI = [
   "function owner() view returns (address)"
 ]
 
-// In-memory NFC registry (in production, use database like Vercel KV)
-const nfcRegistry = new Map<string, {
+// Types for better type safety
+interface NFCRegistryEntry {
   walletAddress: string
   claimedChains: number[]
   timestamp: number
   privateKey: string
-}>()
+}
+
+interface MintResult {
+  hash: string | null
+  success: boolean
+  error?: string
+}
+
+interface MockTransactionResult {
+  hash: string
+}
+
+// In-memory NFC registry (in production, use database like Vercel KV)
+const nfcRegistry = new Map<string, NFCRegistryEntry>()
 
 // Generate deterministic wallet from NFC ID
 function generateTempWallet(nfcId: string, chainId: number) {
@@ -31,7 +44,7 @@ function generateTempWallet(nfcId: string, chainId: number) {
 }
 
 // Real blockchain transaction - Mint SWAG tokens
-async function mintSwagTokens(walletAddress: string) {
+async function mintSwagTokens(walletAddress: string): Promise<MintResult> {
   try {
     const provider = new ethers.providers.JsonRpcProvider(POLYGON_AMOY_RPC)
     const relayerWallet = new ethers.Wallet(RELAYER_PRIVATE_KEY!, provider)
@@ -57,19 +70,19 @@ async function mintSwagTokens(walletAddress: string) {
     return { 
       hash: null, 
       success: false, 
-      error: (error as Error).message 
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
     }
   }
 }
 
 // Mock functions (still mock for trophy and gas)
-async function mockMintTrophy(walletAddress: string, eventName: string, chainId: number) {
+async function mockMintTrophy(walletAddress: string, eventName: string, chainId: number): Promise<MockTransactionResult> {
   await new Promise(resolve => setTimeout(resolve, 1000))
   console.log(`Minting trophy for ${walletAddress} on chain ${chainId}`)
   return { hash: '0x' + Math.random().toString(16).substr(2, 64) }
 }
 
-async function mockTransferGas(walletAddress: string, amount: string) {
+async function mockTransferGas(walletAddress: string, amount: string): Promise<MockTransactionResult> {
   await new Promise(resolve => setTimeout(resolve, 300))
   console.log(`Transferring ${amount} POL to ${walletAddress}`)
   return { hash: '0x' + Math.random().toString(16).substr(2, 64) }
@@ -137,10 +150,10 @@ export async function POST(request: NextRequest) {
       }
     })
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('NFC scan error:', error)
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: error instanceof Error ? error.message : 'Internal server error' },
       { status: 500 }
     )
   }
